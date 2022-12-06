@@ -1,0 +1,1 @@
+This will eventually contain code that can be used with Deno to read a json file (root is an array) and create a sqlite database
