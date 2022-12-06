@@ -1,0 +1,4 @@
+*.db
+Samples/*
+.idea/
+.vs/
