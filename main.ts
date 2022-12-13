@@ -21,33 +21,8 @@ function getArguments() {
             shortName: 'j',
             description: 'Json file.',
             convertor: Arguments.stringConvertor
-        },
-        // 'myNumber': {
-        //     shortName: 'n',
-        //     description: 'This is a number flag.',
-        //     convertor: Arguments.numberConvertor,
-        //     default: () => 0
-        // },
-        // 'myBoolean': {
-        //     shortName: 'b',
-        //     description: 'This is a boolean flag.',
-        //     convertor: Arguments.booleanConvertor,
-        // },
-        // 'myCustom': {
-        //     shortName: 'c',
-        //     description: 'This is a custom flag.',
-        //     convertor: value => {
-        //         if (value === undefined) return undefined;
-        //
-        //         return `🐰 — ${value} — 🐭`;
-        //     },
-        //}
-        // 'myDeprecated': {
-        //     convertor: Arguments.stringConvertor,
-        //     excludeFromHelp: true
-        // },
-    })
-        .setDescription("Json 2 Sqlite.")
+        }
+    }).setDescription("Json 2 Sqlite.")
 
 
     // Important for `--help` flag works.
@@ -97,7 +72,7 @@ try {
     };
     
     for(let i=0; i<json.length; i++) {
-        Object.entries(json[0]).forEach(([key, value], index) => {
+        Object.entries(json[i]).forEach(([key, value], index) => {
             if (typeof value === 'string') {
                 pushTo(stringFields, 'string', key);
             } else if (typeof value === 'number') {
@@ -138,10 +113,36 @@ try {
     sqlString[sqlString.length] = ")";
 
     const db = new sqlite.DB(args.filename);
-    db.execute(sqlString.join(""));
+    await db.execute(sqlString.join(""));
+
+    const sqlEscape = (value : string) => {
+        return value.replace(/"/g, '""').replace(/'/g, "''");
+    }
+    // Insert
     for(let i=0; i<json.length; i++)
     {
-        
+        const fieldList = [] as Array<string>;
+        const valueList = [] as Array<string>;
+        Object.entries(json[i]).forEach(([key, value], index) => {
+            fieldList[fieldList.length] = key;
+            const dataType = stringFields.indexOf(key) !== -1 ? "string" :
+                numberFields.indexOf(key) !== -1 ? "number" :
+                booleanFields.indexOf(key)!== -1? "bool" : "blob";
+            console.log(key, dataType);
+            valueList[valueList.length] = dataType === "string" ?
+                    `'${sqlEscape((value || '') as string)}'`:
+                dataType === "number" ?
+                    `${value}` :
+                dataType === "bool" ?
+                    `${value === true}` :
+                    `'${sqlEscape(JSON.stringify(value))}'`;
+        });
+
+        const sql = `
+            INSERT INTO ${args.table} (${fieldList.join(", ")})
+                VALUES (${valueList.join(", ")})`;
+        console.log(sql);
+        await db.execute(sql);
     }
     db.close();
     
