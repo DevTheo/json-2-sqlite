@@ -1,0 +1,13 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 100,
+            "driver": "SQLite",
+            "name": "MarvelChamps",
+            "group": "Sqlite",
+            "database": "${workspaceFolder:json-2-sqlite}/MarvelChamps.db"
+        }
+    ],
+    "deno.enable": true,
+    "deno.unstable": true
+}

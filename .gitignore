@@ -2,3 +2,4 @@
 Samples/*
 .idea/
 .vs/
+*.sql
