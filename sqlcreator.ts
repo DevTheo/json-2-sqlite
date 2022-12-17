@@ -91,9 +91,8 @@ export const createInsert = (tableName: string, row: any, stringFields: Array<st
                 `'${sqlEscape(JSON.stringify(value))}'`;
     });
 
-    const sql = `
-        INSERT INTO ${tableName} (${fieldList.join(", ")})
-            VALUES (${valueList.join(", ")})`;
+    const sql = `INSERT INTO ${tableName} (${fieldList.join(", ")})`+
+    ` VALUES (${valueList.join(", ")})`;
     console.log(sql);
     return sql;
 } 
