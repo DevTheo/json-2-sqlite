@@ -4,7 +4,6 @@ export const buildTable = (tableName: string, json: any) => {
     const numberFields = [] as Array<string>;
     const booleanFields = [] as Array<string>;
     const objectFields = [] as Array<string>;
-
     const pushTo = (arr: Array<string>, type: string, fieldName: string) => {
         const isStringField = stringFields.indexOf(fieldName) !== -1;
         const isNumberField = numberFields.indexOf(fieldName) !== -1;

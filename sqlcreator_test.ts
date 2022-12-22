@@ -13,7 +13,6 @@ import {buildTable, createInsert} from "./sqlcreator.ts";
     const complexObject = getResult(complexJson());
 Deno.test("buildTable Tests", async (t) => {
 
-    
     // deno-lint-ignore require-await
     await t.step("single String Field", async () => {
         const {sql, stringFields, numberFields, booleanFields} = singleStringField;
@@ -72,16 +71,10 @@ Deno.test("buildTable Tests", async (t) => {
         assertEquals(1, booleanFields.length, "numberFields should be empty");
         assertEquals("CREATE TABLE IF NOT EXISTS 'data' (id TEXT PRIMARY KEY, str TEXT, num NUMBER, tf BOOL, obj BLOB)", sql, `sql does not match; was '${sql}'`); 
     });
-
 });
 
-//WIP create insert tests
 Deno.test("createInsert Tests", async(t) =>{
     //initialize test
-    // deno-lint-ignore no-explicit-any
-    const getResult = (rows: any, strings:Array<string>, numbers:Array<string>, booleans:Array<string>) => {
-        return createInsert("data",rows,strings,numbers,booleans);
-    }
     // deno-lint-ignore require-await
     await t.step("Single String Field", async () => {
         const {stringFields, numberFields, booleanFields} = singleStringField;
@@ -139,6 +132,13 @@ Deno.test("createInsert Tests", async(t) =>{
         assertEquals("INSERT INTO data (0, 1) VALUES (\'{\"\"a\"\":\"\"b\"\",\"\"c\"\":1}\', \'{\"\"d\"\":\"\"e\"\",\"\"f\"\":2}\')", insertSQL, `sql does not match; was '${insertSQL}'`); 
     });
     // deno-lint-ignore require-await
+    await t.step("Multi Type Field", async () => {
+        const {stringFields, numberFields, booleanFields} = singleNumberField;
+        const json = ["a",2,false,{"d":"e", "f": 4}];
+        const insertSQL = createInsert("data",json,stringFields,numberFields,booleanFields);
+        assertEquals("INSERT INTO data (0, 1, 2, 3) VALUES (\'\"\"a\"\"\', \'2\', \'false\', \'{\"\"d\"\":\"\"e\"\",\"\"f\"\":4}\')", insertSQL, `sql does not match; was '${insertSQL}'`); 
+    });
+    // deno-lint-ignore require-await
     await t.step("single Id Field", async () => {
         const {stringFields, numberFields, booleanFields} = singleIdField;
         const json = justAnID();
@@ -153,6 +153,8 @@ Deno.test("createInsert Tests", async(t) =>{
         assertEquals("INSERT INTO data (0, 1) VALUES (\'{\"\"id\"\":1,\"\"str\"\":\"\"test\"\",\"\"num\"\":1}\', \'{\"\"id\"\":2,\"\"num\"\":1,\"\"tf\"\":false,\"\"obj\"\":{\"\"a\"\":\"\"b\"\",\"\"c\"\":1}}\')", insertSQL, `sql does not match; was '${insertSQL}'`); 
     });
 });
+
+
 
 function justAnID(): any {
   return [{ "id": 1 }];

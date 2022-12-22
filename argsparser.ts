@@ -20,6 +20,11 @@ export const parseArguments = () => {
             shortName: 'j',
             description: 'Json file.',
             convertor: Arguments.stringConvertor
+        },
+        'path': {
+            shortName: 'p',
+            description: 'Path file.',
+            convertor: Arguments.stringConvertor
         }
     }).setDescription("Json 2 Sqlite.")
 
